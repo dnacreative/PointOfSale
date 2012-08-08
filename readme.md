@@ -1,0 +1,3 @@
+This app will eventually manage inventories, sales, customers, etc. for small businesses. Motivated by an ancient QuickBooks POS installation on a Windows 98 machine still being used in 2012.
+
+I'm currently planning to use [Python 2.7](http://python.org/) with a [PostgreSQL](http://www.postgresql.org/) database accessed via [SQLAlchemy](http://www.sqlalchemy.org/), possibly with a web framework to allow for remote deployment.
