@@ -46,7 +46,7 @@ class Vendor(Base):
     vendor_code = Column(String(app_settings.short_length), nullable=False)
     vendor_name = Column(String(app_settings.long_length), nullable=False)
 
-    item = relationship("Item")
+    #item = relationship("Item")
 
     def __init__(self, code, name):
         self.vendor_code = code
@@ -59,7 +59,7 @@ class Department(Base):
     dept_code = Column(String(app_settings.short_length), nullable=False)
     dept_name = Column(String(app_settings.long_length), nullable=False)
 
-    item = relationship("Item")
+    #item = relationship("Item")
 
     def __init__(self, code, name):
         self.dept_code = code
@@ -88,7 +88,7 @@ class Adjustment(Base):
     old_text = Column(String(app_settings.long_length))
     new_text = Column(String(app_settings.long_length))
 
-    item = relationship("Item", backref=backref('adjustments', order_by=id))
+    #item = relationship("Item", backref=backref('adjustments', order_by=id))
     
     def __init__(self, adj_id, item_id, adj_date, valid_date, adj_type, old_value, new_value, old_text, new_text):
         self.adjustment_id = adj_id
