@@ -165,3 +165,7 @@ pip-log.txt
 # QuickBooks POS transition stuff
 QBPOS/
 *.dat
+
+# Lock files
+*.lck
+
