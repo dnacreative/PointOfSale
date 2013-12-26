@@ -12,7 +12,9 @@ def root():
     
 @app.route('/inventory/')
 def inventory():
-    return render_template('invn.html')
+    # TODO: build list of items to display
+    items = [{'id': 1, 'name': 'magnetic bookmark', 'description': 'watercolor bookmark', 'vendor_code': 'N/A', 'dept_code': 'N/A', 'quantity': 12, 'tax': True, 'cost': 1.00, 'price': 1.99}]
+    return render_template('invn.html', items=items)
     
 @app.route('/inventory/<int:id>')
 def show_item(id):

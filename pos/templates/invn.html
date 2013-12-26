@@ -4,4 +4,30 @@
 
 {% block content %}
     <p>Inventory goes here</p>
+    <table>
+        <tr class="column_head">
+            <td>ID</td>
+            <td>Name</td>
+            <td>Description</td>
+            <td>Vendor</td>
+            <td>Department</td>
+            <td>Quantity</td>
+            <td>Tax</td>
+            <td>Cost</td>
+            <td>Price</td>
+        </tr>
+        {% for item in items %}
+        <tr>
+            <td><a href="{{ url_for('show_item', id=item.id) }}">{{ item.id }}</a></td>
+            <td>{{ item.name }}</td>
+            <td>{{ item.description }}</td>
+            <td>{{ item.vendor_code }}</td>
+            <td>{{ item.dept_code }}</td>
+            <td>{{ item.quantity }}</td>
+            <td>{{ item.tax }}</td>
+            <td>{{ item.cost }}</td>
+            <td>{{ item.price }}</td>
+        </tr>
+        {% endfor %}
+    </table>
 {% endblock %}

@@ -1,0 +1,4 @@
+table                          { border-collapse: separate;
+                   border-spacing: 0.5rem; }
+
+.column_head td     { font-weight: bold; }
