@@ -1,3 +1,9 @@
+debug = True
+
+# flask stuff
+secret_key = 'not implemented'
+
+# sqlalchemy stuff
 db_name = 'pointofsale'
 # length of descriptive VARCHAR columns (item name, etc.)
 long_length = 100
