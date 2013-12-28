@@ -3,9 +3,11 @@ from __future__ import absolute_import
 from flask import Flask, render_template
 
 import pos.app_settings
+import pos.db
 
 app = Flask('pos')
 
+# views
 @app.route('/')
 def root():
     return render_template('index.html')

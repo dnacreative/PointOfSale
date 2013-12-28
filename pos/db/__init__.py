@@ -10,34 +10,10 @@ from pos import app_settings
 
 #engine = create_engine('postgresql:///' + app_settings.db_name)
 # using sqlite for testing (will switch to postgres later)
-engine = create_engine('sqlite:///:memory:', echo=True)
+engine = create_engine('sqlite:///pos/test.db', echo=True, convert_unicode=True)
 
-session = scoped_session(sessionmaker(bind=engine, autoflush=False))
+db_session = scoped_session(sessionmaker(bind=engine, autoflush=False))
 Base = declarative_base(bind=engine)
-
-class Item(Base):
-    __tablename__ = 'items'
-
-    item_id = Column(Integer, primary_key=True, nullable=False)
-    vendor_id = Column(Integer, ForeignKey('vendors.id'))
-    dept_id = Column(Integer, ForeignKey('departments.id'))
-    # note: sqlalchemy String corresponds to SQL VARCHAR
-    name = Column(String(app_settings.long_length), nullable=False)
-    description = Column(String(app_settings.long_length))
-    quantity = Column(Integer, nullable=False)
-    tax = Column(Boolean, nullable=False)
-    cost = Column(Numeric(19, 4), nullable=False)
-    price = Column(Numeric(19, 4), nullable=False)
-
-    def __init__(self, vendor_id, dept_id, name, description, quantity, tax, cost, price):
-        self.vendor_id = vendor_id
-        self.dept_id = dept_id
-        self.name = name
-        self.description = description
-        self.quantity = quantity
-        self.tax = tax
-        self.cost = cost
-        self.price = price
 
 class Vendor(Base):
     __tablename__ = 'vendors'
@@ -65,11 +41,35 @@ class Department(Base):
         self.dept_code = code
         self.dept_name = name
 
+
+class Item(Base):
+    __tablename__ = 'items'
+
+    item_id = Column(Integer, primary_key=True, nullable=False)
+    vendor_id = Column(Integer, ForeignKey('vendors.vendor_id'))
+    dept_id = Column(Integer, ForeignKey('departments.dept_id'))
+    # note: sqlalchemy String corresponds to SQL VARCHAR
+    name = Column(String(app_settings.long_length), nullable=False)
+    description = Column(String(app_settings.long_length))
+    quantity = Column(Integer, nullable=False)
+    tax = Column(Boolean, nullable=False)
+    cost = Column(Numeric(19, 4), nullable=False)
+    price = Column(Numeric(19, 4), nullable=False)
+
+    def __init__(self, vendor_id, dept_id, name, description, quantity, tax, cost, price):
+        self.vendor_id = vendor_id
+        self.dept_id = dept_id
+        self.name = name
+        self.description = description
+        self.quantity = quantity
+        self.tax = tax
+        self.cost = cost
+        self.price = price
 class UPC(Base):
     __tablename__ = 'upcs'
     
     upc = Column(String(13), primary_key=True, nullable=False)
-    item_id = Column(Integer, nullable=False)
+    item_id = Column(Integer, ForeignKey('items.item_id'), nullable=False)
     
     def __init__(self, upc, item_id):
         self.upc = upc
@@ -79,7 +79,7 @@ class Adjustment(Base):
     __tablename__ = 'adjustments'
 
     adjustment_id = Column(Integer, primary_key=True, nullable=False)
-    item_id = Column(Integer, ForeignKey('items.id'), nullable=False)
+    item_id = Column(Integer, ForeignKey('items.item_id'), nullable=False)
     adjustment_date = Column(DateTime, default=datetime.datetime.utcnow(), nullable=False)
     valid_date = Column(DateTime, default=datetime.datetime.utcnow(), nullable=False)
     adjustment_type = Column(String(app_settings.short_length), nullable=False)
