@@ -2,7 +2,7 @@ import datetime
 
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import scoped_session, sessionmaker, relationship
+from sqlalchemy.orm import scoped_session, sessionmaker, relationship, validates
 from sqlalchemy.types import Integer, String, Numeric, Boolean, DateTime
 from sqlalchemy.schema import Column, ForeignKey
 
@@ -27,6 +27,11 @@ class Vendor(Base):
     def __init__(self, code, name):
         self.vendor_code = code
         self.vendor_name = name
+        
+    @validates('vendor_code')
+    def validate_vendor_code(self, key, vendor_code):
+        # make sure the vendor code entered is unique
+        assert db_session.query(Vendor).filter(Vendor.vendor_code == vendor_code).scalar() == None, 'Vendor code is already in use'
 
 class Department(Base):
     __tablename__ = 'departments'
@@ -40,6 +45,11 @@ class Department(Base):
     def __init__(self, code, name):
         self.dept_code = code
         self.dept_name = name
+        
+    @validates('dept_code')
+    def validate_dept_code(self, key, dept_code):
+        # make sure dept code entered is unique
+        assert db_session.query(Department).filter(Department.dept_code == dept_code).scalar() == None, 'Department code is already in use'
 
 
 class Item(Base):
@@ -56,15 +66,28 @@ class Item(Base):
     cost = Column(Numeric(19, 4), nullable=False)
     price = Column(Numeric(19, 4), nullable=False)
 
-    def __init__(self, vendor_id, dept_id, name, description, quantity, tax, cost, price):
-        self.vendor_id = vendor_id
-        self.dept_id = dept_id
+    def __init__(self, name, description, quantity, tax, cost, price, **kwargs):
+        if 'vendor_id' in kwargs:
+            self.vendor_id = vendor_id
+        elif 'vendor_code' in kwargs:
+            self.vendor_id = db_session.query(Vendor.vendor_id).filter(Vendor.vendor_code == kwargs['vendor_code']).scalar()
+        else:
+            self.vendor_id = None
+
+        if 'dept_id' in kwargs:
+            self.dept_id = dept_id
+        elif 'dept_code' in kwargs:
+            self.dept_id = db_session.query(Department.dept_id).filter(Department.dept_code == kwargs['dept_code']).scalar()
+        else:
+            self.dept_id = None
+
         self.name = name
         self.description = description
         self.quantity = quantity
         self.tax = tax
         self.cost = cost
         self.price = price
+
 class UPC(Base):
     __tablename__ = 'upcs'
     
