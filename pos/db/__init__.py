@@ -6,11 +6,9 @@ from sqlalchemy.orm import scoped_session, sessionmaker, relationship, validates
 from sqlalchemy.types import Integer, String, Numeric, Boolean, DateTime
 from sqlalchemy.schema import Column, ForeignKey
 
-from pos import app_settings
+from pos.app_settings import db_engine, db_name
 
-#engine = create_engine('postgresql:///' + app_settings.db_name)
-# using sqlite for testing (will switch to postgres later)
-engine = create_engine('sqlite:///pos/test.db', echo=True, convert_unicode=True)
+engine = create_engine(db_engine + ':///' + db_name, echo=True, convert_unicode=True)
 
 db_session = scoped_session(sessionmaker(bind=engine, autoflush=False))
 Base = declarative_base(bind=engine)
@@ -32,6 +30,8 @@ class Vendor(Base):
     def validate_vendor_code(self, key, vendor_code):
         # make sure the vendor code entered is unique
         assert db_session.query(Vendor).filter(Vendor.vendor_code == vendor_code).scalar() == None, 'Vendor code is already in use'
+        
+        return vendor_code
 
 class Department(Base):
     __tablename__ = 'departments'
@@ -50,6 +50,8 @@ class Department(Base):
     def validate_dept_code(self, key, dept_code):
         # make sure dept code entered is unique
         assert db_session.query(Department).filter(Department.dept_code == dept_code).scalar() == None, 'Department code is already in use'
+        
+        return dept_code
 
 
 class Item(Base):
