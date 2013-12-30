@@ -2,13 +2,13 @@ import datetime
 
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import scoped_session, sessionmaker, relationship, validates
+from sqlalchemy.orm import scoped_session, sessionmaker, relationship, backref, validates
 from sqlalchemy.types import Integer, String, Numeric, Boolean, DateTime
 from sqlalchemy.schema import Column, ForeignKey
 
 from pos.app_settings import db_engine, db_name
 
-engine = create_engine(db_engine + ':///' + db_name, echo=True, convert_unicode=True)
+engine = create_engine(db_engine + '://' + db_name, echo=True, convert_unicode=True)
 
 db_session = scoped_session(sessionmaker(bind=engine, autoflush=False))
 Base = declarative_base(bind=engine)
@@ -19,8 +19,6 @@ class Vendor(Base):
     vendor_id = Column(Integer, primary_key=True, nullable=False)
     vendor_code = Column(String(app_settings.short_length), nullable=False)
     vendor_name = Column(String(app_settings.long_length), nullable=False)
-
-    #item = relationship("Item")
 
     def __init__(self, code, name):
         self.vendor_code = code
@@ -39,8 +37,6 @@ class Department(Base):
     dept_id = Column(Integer, primary_key=True, nullable=False)
     dept_code = Column(String(app_settings.short_length), nullable=False)
     dept_name = Column(String(app_settings.long_length), nullable=False)
-
-    #item = relationship("Item")
 
     def __init__(self, code, name):
         self.dept_code = code
@@ -67,6 +63,9 @@ class Item(Base):
     tax = Column(Boolean, nullable=False)
     cost = Column(Numeric(19, 4), nullable=False)
     price = Column(Numeric(19, 4), nullable=False)
+    
+    vendor = relationship('Vendor', backref=backref('items', order_by=item_id))
+    dept = relationship('Department', backref=backref('items', order_by=item_id))
 
     def __init__(self, name, description, quantity, tax, cost, price, **kwargs):
         if 'vendor_id' in kwargs:
@@ -96,6 +95,8 @@ class UPC(Base):
     upc = Column(String(13), primary_key=True, nullable=False)
     item_id = Column(Integer, ForeignKey('items.item_id'), nullable=False)
     
+    item = relationship('Item', backref=backref('upcs', order_by=upc))
+    
     def __init__(self, upc, item_id):
         self.upc = upc
         self.item_id = item_id
@@ -113,10 +114,9 @@ class Adjustment(Base):
     old_text = Column(String(app_settings.long_length))
     new_text = Column(String(app_settings.long_length))
 
-    #item = relationship("Item", backref=backref('adjustments', order_by=id))
+    item = relationship("Item", backref=backref('adjustments', order_by=adjustment_id))
     
-    def __init__(self, adj_id, item_id, adj_date, valid_date, adj_type, old_value, new_value, old_text, new_text):
-        self.adjustment_id = adj_id
+    def __init__(self, item_id, adj_date, valid_date, adj_type, old_value, new_value, old_text, new_text):
         self.item_id = item_id
         self.adjustment_date = adj_date
         self.valid_date = valid_date

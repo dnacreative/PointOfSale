@@ -22,3 +22,7 @@ def inventory():
 def show_item(id):
     # detail page for item
     return render_template('invn.html')
+    
+@app.teardown_request
+def shutdown_session(exception=None):
+    pos.db.session.remove()
