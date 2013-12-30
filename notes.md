@@ -9,6 +9,8 @@ execute modules with -m (e.g., from project root, `python -m pos.tests.db_tests`
 
 if flask debug is set, need to set PYTHONPATH=. before executing
 
+[database URL construction in SQLAlchemy](http://docs.sqlalchemy.org/en/rel_0_8/core/engines.html#database-urls) (note that SQLite follows the trend, but hostname can be omitted, resulting in the potentially unintuitive `///`)
+
 examples of sqlalchemy testing
 - http://stackoverflow.com/questions/833626/i-need-a-sample-of-python-unit-testing-sqlalchemy-model-with-nose
 - http://sontek.net/blog/detail/writing-tests-for-pyramid-and-sqlalchemy

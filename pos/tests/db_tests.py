@@ -6,6 +6,7 @@ import unittest
 from sqlalchemy import create_engine
 
 from pos.db import db_session, Base, Vendor, Department, Item
+from pos.app_settings import db_engine, db_test_name
 
 # creating objects that instantiate the tables queries the DB
 # therefore, only create them as needed rather than immediately on import
@@ -33,7 +34,8 @@ def get_test_items():
 
 class test_item_table(unittest.TestCase):
     def setUp(self):
-        pass
+        engine = create_engine(db_engine + '://' + db_test_name, echo = True, convert_unicode=True)
+        db_session.configure(bind=engine)
         
     def test_add_item(self):
         pass
@@ -45,7 +47,7 @@ class test_item_table(unittest.TestCase):
         pass
         
     def tearDown(self):
-        pass
+        db_session.rollback()
     
 def add_test_data():
     test_vendors = get_test_vendors()
